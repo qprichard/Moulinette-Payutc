@@ -1,3 +1,4 @@
+
 # Introduction
 Outil d'importation de droits sur Nemopay.
 
@@ -24,9 +25,25 @@ Noter que le paramètre -f permet de ne donner les permission que sur 1 fondatio
 | Cesar | Richard | cerichar | SALE |
 | Quentin | Richard | qrichard | SALE |
 
+Rappel des droits disponibles :
+1. **SALE** : Vente
+2. **RELOAD** : Rechargement
+3. **ACCESSCONTROL** : Contrôle des accès
+4. **ASSISTANCE** : Assistance
+5. **PAIRING** : Appairage 
+6. **STOCK** : Gestion des stocks 
+7. **EDITACCESSRIGHT** : Édition des accès
+8. **ADMIN** : Tous les droits
+
 ### Action addGroup
 
 | Prenom | Nom | Login | Id du WalletGroup |
 |--|--|--|--|
 | Cesar | Richard | cerichar | 4 |
 | Quentin | Richard | qrichard | 3 |
+
+Rappel des groupes actuels :
+1. **SiMDE**
+2. **CAT - VENTE**
+3. **CAT - RESPONSABLE**
+4. **CAT - RECHARGE**
