@@ -12,15 +12,7 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 headers = {
-	"Host": "api.nemopay.net",
-	"User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0",
-	"Accept": "application/json, text/plain, */*",
-	"Accept-Language": "fr-FR",
-	"Referer": "https://admin.nemopay.net/",
-	"Nemopay-Version": "2017-12-15",
-	"Content-Type": "application/json",
-	"Origin": "https://admin.nemopay.net",
-	"Connection": "keep-alive",
+	"Nemopay-Version": "2017-12-15"
 }
 
 def readCsv(inputfile,action,sessionid,fundation):
