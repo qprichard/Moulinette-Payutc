@@ -10,8 +10,6 @@ class bcolors:
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
-	
-sessionidbk='oceieo49wnzr1wziwtlg8bbcdljaft49'
 
 headers = {
 	"Host": "api.nemopay.net",
