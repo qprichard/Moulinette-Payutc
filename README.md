@@ -1,5 +1,5 @@
 
-# Introduction
+# Nemopay-mini-cli
 Outil d'importation de droits sur Nemopay.
 
 Dans la version actuelle il faut recuperer un id de session existant en se connectant manuellement sur le back office nemopay.
@@ -34,6 +34,10 @@ Rappel des droits disponibles :
 6. **STOCK** : Gestion des stocks 
 7. **EDITACCESSRIGHT** : Édition des accès
 8. **ADMIN** : Tous les droits
+
+
+----------
+
 
 ### Action addGroup
 
