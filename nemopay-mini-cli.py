@@ -49,6 +49,24 @@ def getWalletGroups(sessionid):
 		print bcolors.FAIL + "FAIL (unhandled error)" + bcolors.ENDC
 		print response.json()
 		sys.exit(9)
+
+def tranfert(walletsrc,walletdst,amount,message,sessionid):
+	print bcolors.HEADER + 'Transferring '+ str(amount/100.0) + ' from wallet ' + walletsrc + ' to wallet ' + walletdst + ' (' + message + ')' + bcolors.ENDC
+	params = (
+		('system_id', 'payutc'),
+		('sessionid', sessionid),
+	)
+	data = '{"wallet_src":'+walletsrc+',"wallet_dst":'+walletdst+',"amount":'+amount+',"message":"'+message+'"}'
+	response = requests.post('https://api.nemopay.net/services/GESUSERS/transfer', headers=headers, params=params, data=data)
+	if response.status_code==200:
+		ret = {}
+		for group in response.json():
+			ret[group['id']]=group['name']
+		return ret
+	else:
+		print bcolors.FAIL + "FAIL (unhandled error)" + bcolors.ENDC
+		print response.json()
+		sys.exit(9)
 		
 def getWalletId(user,sessionid):
 
