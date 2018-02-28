@@ -20,16 +20,38 @@ def readCsv(inputfile,action,sessionid,fundation):
 	with open(inputfile, 'rb') as csvfile:
 		spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
 		if action=="addGroup":
+			lastparam=getWalletGroups(sessionid)
 			callable=addWalletToGroup
 		elif action=="addRight":
+			lastparam=fundation
 			callable=addRightToWallet
 		for row in spamreader:
 			if(row[0]+row[1]+row[2]!=''):
-				callable(getWalletId(row[0]+' '+row[1]+' '+row[2],sessionid),row[3],sessionid,fundation)
+				callable(getWalletId(row[0]+' '+row[1]+' '+row[2],sessionid),row[3],sessionid,lastparam)
 				
+def getWalletGroups(sessionid):
+	print bcolors.HEADER + 'Getting wallet groups' + bcolors.ENDC
+	params = (
+		('event', '1'),
+		('ordering', 'id'),
+		('system_id', 'payutc'),
+		('active', True),
+		('sessionid', sessionid),
+	)
+	response = requests.get('https://api.nemopay.net/resources/walletgroups', headers=headers, params=params)
+	if response.status_code==200:
+		ret = {}
+		for group in response.json():
+			ret[group['id']]=group['name']
+		return ret
+	else:
+		print bcolors.FAIL + "FAIL (unhandled error)" + bcolors.ENDC
+		print response.json()
+		sys.exit(9)
+		
 def getWalletId(user,sessionid):
 
-	print bcolors.HEADER + 'Getting ' + user + ' wallet id ' + bcolors.ENDC
+	print bcolors.OKBLUE + 'Getting ' + user + ' wallet id ' + bcolors.ENDC
 	params = (
 		('system_id', 'payutc'),
 		('sessionid', sessionid),
@@ -52,14 +74,14 @@ def getWalletId(user,sessionid):
 		print response.json()
 		sys.exit(8)
 			
-def addWalletToGroup(wallet,walletGroup,sessionid,ignored):
+def addWalletToGroup(wallet,walletGroup,sessionid,walletgroups):
 
 	params = (
 		("system_id", 'payutc'),
 		("sessionid", sessionid),
 	)
 
-	print bcolors.HEADER + 'Adding wallet' + str(wallet) + ' to group ' + str(walletGroup) + bcolors.ENDC
+	print bcolors.OKBLUE + 'Adding wallet ' + str(wallet) + ' to group ' + walletgroups[int(walletGroup)] + bcolors.ENDC
 
 	data = '{"wallet_id":'+str(wallet)+'}'
 
@@ -77,7 +99,7 @@ def addRightToWallet(wallet,permission,sessionid,fundation):
 		("sessionid", sessionid),
 	)
 
-	print bcolors.HEADER + 'Adding permission ' + str(permission) + ' to wallet ' + str(wallet) + ' on fundation ' + str(fundation) + bcolors.ENDC
+	print bcolors.OKBLUE + 'Adding permission ' + str(permission) + ' to wallet ' + str(wallet) + ' on fundation ' + str(fundation) + bcolors.ENDC
 
 	data = '{"obj":'+wallet+',"fundation":'+fundation+',"location":null,"event":1,"name":"'+permission+'"}'
 
