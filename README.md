@@ -6,12 +6,13 @@ Dans la version actuelle il faut recuperer un id de session existant en se conne
 
 ## Utilisation
 ```bash
-python nemopay-mini-cli.py -i <inputfile> -a <addGroup|addRight> -s <sessionid> [-f <fundationid>]
+python nemopay-mini-cli.py -i <inputfile> -a <addGroup|addRight> -u <casUsername> -p <casPassword> [-f <fundationid>]
 ```
 
 * **-i ou --inputfile** : fichier au format CSV contenant les modifications à apporter (structure du fichier plus bas)
 * **-a ou --action**    : action à executer
-* **-s ou --sessionid** : sessionid a utiliser pour envoyer les requetes au nom de daphne
+* **-u ou --username** : Login a utiliser pour se connecter au syteme via CAS
+* **-p ou --password** : Mot de passe a utiliser pour se connecter au syteme via CAS
 * **-f ou --fundation** : Id de la fondation sur laquelle mettre les droits (dans le cas de l'action **addRight**) s'il est omis la permission s'applique à tout le système 
 
 ## Structure du fichier d'entrée
