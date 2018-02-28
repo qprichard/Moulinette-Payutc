@@ -12,7 +12,8 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 headers = {
-	"Nemopay-Version": "2017-12-15"
+		'Content-Type': 'application/json',
+		'Nemopay-Version': '2017-12-15',
 }
 
 def readCsv(inputfile,action,sessionid,fundation):
@@ -27,11 +28,12 @@ def readCsv(inputfile,action,sessionid,fundation):
 				callable(getWalletId(row[0]+' '+row[1]+' '+row[2],sessionid),row[3],sessionid,fundation)
 				
 def getWalletId(user,sessionid):
-	params = (
-		("system_id", 'payutc'),
-		("sessionid", sessionid),
-	)
+
 	print bcolors.HEADER + 'Getting ' + user + ' wallet id ' + bcolors.ENDC
+	params = (
+		('system_id', 'payutc'),
+		('sessionid', sessionid),
+	)
 	data = '{"queryString":"'+str(user)+'","wallet_config":1}'
 
 	response = requests.post('https://api.nemopay.net/services/GESUSERS/walletAutocomplete', headers=headers, params=params, data=data)
@@ -43,8 +45,12 @@ def getWalletId(user,sessionid):
 		print bcolors.FAIL + "FAIL (account not found)" + bcolors.ENDC
 		print bcolors.FAIL + "Exiting" + bcolors.ENDC
 		sys.exit(7)
-	else:
+	elif response.status_code==200:
 		return str(response.json()[0]['id'])
+	else:
+		print bcolors.FAIL + "FAIL (unhandled error)" + bcolors.ENDC
+		print response.json()
+		sys.exit(8)
 			
 def addWalletToGroup(wallet,walletGroup,sessionid,ignored):
 
@@ -71,7 +77,7 @@ def addRightToWallet(wallet,permission,sessionid,fundation):
 		("sessionid", sessionid),
 	)
 
-	print bcolors.HEADER + 'Adding permission' + str(permission) + ' to wallet ' + str(wallet) + ' on fundation ' + str(fundation) + bcolors.ENDC
+	print bcolors.HEADER + 'Adding permission ' + str(permission) + ' to wallet ' + str(wallet) + ' on fundation ' + str(fundation) + bcolors.ENDC
 
 	data = '{"obj":'+wallet+',"fundation":'+fundation+',"location":null,"event":1,"name":"'+permission+'"}'
 
