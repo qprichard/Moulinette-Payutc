@@ -46,8 +46,3 @@ Rappel des droits disponibles :
 | Cesar | Richard | cerichar | 4 |
 | Quentin | Richard | qrichard | 3 |
 
-Rappel des groupes actuels :
-1. **SiMDE**
-2. **CAT - VENTE**
-3. **CAT - RESPONSABLE**
-4. **CAT - RECHARGE**
