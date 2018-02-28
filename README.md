@@ -6,7 +6,7 @@ Dans la version actuelle il faut recuperer un id de session existant en se conne
 
 ## Utilisation
 ```bash
-python moulinette.py -i <inputfile> -a <addGroup|addRight> -s <sessionid> [-f <fundationid>]
+python nemopay-mini-cli.py -i <inputfile> -a <addGroup|addRight> -s <sessionid> [-f <fundationid>]
 ```
 
 * **-i ou --inputfile** : fichier au format CSV contenant les modifications à apporter (structure du fichier plus bas)
