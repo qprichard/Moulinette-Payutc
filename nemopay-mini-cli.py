@@ -1,6 +1,7 @@
 import csv 
 import sys, getopt, os.path
 import requests
+import urllib
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -39,6 +40,24 @@ def getWalletGroups(sessionid):
 		('sessionid', sessionid),
 	)
 	response = requests.get('https://api.nemopay.net/resources/walletgroups', headers=headers, params=params)
+	if response.status_code==200:
+		ret = {}
+		for group in response.json():
+			ret[group['id']]=group['name']
+		return ret
+	else:
+		print bcolors.FAIL + "FAIL (unhandled error)" + bcolors.ENDC
+		print response.json()
+		sys.exit(9)
+
+def tranfert(walletsrc,walletdst,amount,message,sessionid):
+	print bcolors.HEADER + 'Transferring '+ str(amount/100.0) + ' from wallet ' + walletsrc + ' to wallet ' + walletdst + ' (' + message + ')' + bcolors.ENDC
+	params = (
+		('system_id', 'payutc'),
+		('sessionid', sessionid),
+	)
+	data = '{"wallet_src":'+walletsrc+',"wallet_dst":'+walletdst+',"amount":'+amount+',"message":"'+message+'"}'
+	response = requests.post('https://api.nemopay.net/services/GESUSERS/transfer', headers=headers, params=params, data=data)
 	if response.status_code==200:
 		ret = {}
 		for group in response.json():
@@ -109,15 +128,58 @@ def addRightToWallet(wallet,permission,sessionid,fundation):
 		print bcolors.OKGREEN + "OK" + bcolors.ENDC
 	else:
 		print bcolors.FAIL + "FAIL (cannot add permission)" + bcolors.ENDC
-			
+		
+def loginCas2(username,password):
+	params = (
+		('system_id', 'payutc'),
+		('app_key', '0a93e8e18e6ed78fa50c4d74e949801b'),
+	)
+
+	print bcolors.OKBLUE + 'Loggin CAS ' + username + bcolors.ENDC
+
+	service = 'http://localhost/nemopay-mini-cli/login'
+	casurl = requests.post('https://api.nemopay.net/services/ROSETTINGS/getCasUrl', headers=headers, params=params).json()
+	headerscas = {
+		'Content-type': 'application/x-www-form-urlencoded',
+		'Accept': 'text/plain',
+		'User-Agent':'python'
+	}
+	paramscas = urllib.urlencode({
+		'service': service,
+		'username': username,
+		'password': password
+	})
+	
+	response = requests.post(casurl+'/v1/tickets/', headers=headerscas, params=paramscas)
+	
+	location = response.headers['location']
+	tgt = location[location.rfind('/') + 1:]
+	
+	response = requests.post(casurl+'/v1/tickets/'+tgt, headers=headerscas, params=paramscas)
+	st = response.text
+	
+	params = (
+		("system_id", 'payutc'),
+		("app_key","0a93e8e18e6ed78fa50c4d74e949801b"),
+	)
+	
+	data = '{"ticket":"'+st+'","service":"'+service+'"}'
+	
+	response = requests.post('https://api.nemopay.net/services/MYACCOUNT/loginCas2', headers=headers, params=params, data=data)
+	if response.status_code == 200:
+		print bcolors.OKGREEN + "Logged in via CAS as " + response.json()['username'] + bcolors.ENDC
+	
+	return response.json()
 def main(argv):
 	action = ''
 	sessionid = ''
 	inputfile = ''
+	username = ''
+	password = ''
 	fundation = 'null'
-	helper = sys.argv[0] + ' -i <inputfile> -a <addGroup|addRight> -s <sessionid> [-f <fundationid>]'
+	helper = sys.argv[0] + ' -i <inputfile> -a <addGroup|addRight> -u <casUsername> -p <casPassword> [-f <fundationid>]'
 	try:
-		opts, args = getopt.getopt(argv,"hf:i:a:s:",["help","ifile=","action=","sessionid=","fundation="])
+		opts, args = getopt.getopt(argv,"hu:p:f:i:a:",["help","ifile=","action=","username=","password=","fundation="])
 	except getopt.GetoptError as msg:
 		print msg
 		print helper
@@ -138,13 +200,17 @@ def main(argv):
 			else:
 				print bcolors.FAIL + "FAIL ( " + arg + " is not a valid action )" + bcolors.ENDC
 				sys.exit(4)
-		elif opt in ("-s", "--sessionid"):
-			sessionid = arg
+		elif opt in ("-u", "--username"):
+			username = arg
+		elif opt in ("-p", "--password"):
+			password = arg
 		elif opt in ("-f", "--fundation"):
 			fundation = str(arg)
-	if action == '' or sessionid == '' or inputfile == '' or fundation == '':
+	if action == '' or inputfile == '' or fundation == '' or username == '' or password == '':
+		print "One or more required parameter is missing"
 		print helper
 		sys.exit(5)
+	sessionid=loginCas2(username,password)['sessionid']
 	readCsv(inputfile,action,sessionid,fundation)
 	
 			
